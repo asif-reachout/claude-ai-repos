@@ -335,6 +335,23 @@ body {
 .card::before { content: none; }
 .card:hover { border-color: color-mix(in srgb, var(--ink) 22%, var(--line)); box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 16px 32px -20px rgba(0,0,0,.45); }
 .card:hover .go { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+
+/* v6: minimal sidebar header + nav */
+aside { gap: 16px; padding-top: 20px; }
+.brand h1 { font-size: 18px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.01em; white-space: nowrap; }
+.brand .meta { font-size: 12px; }
+.brand .meta b { font-weight: 600; color: var(--muted); }
+.brand .meta .s { color: var(--muted); }
+nav.views { gap: 1px; margin: 0 -6px; }
+nav.views a { padding: 7px 8px; font-size: 14px; font-weight: 500; color: var(--muted); border-radius: 8px; }
+nav.views a:hover { background: color-mix(in srgb, var(--line) 60%, transparent); color: var(--ink); }
+nav.views a[aria-current="page"] { background: color-mix(in srgb, var(--line) 75%, transparent); color: var(--ink); font-weight: 600; }
+nav.views svg { width: 15px; height: 15px; opacity: .7; }
+nav.views .n { font-size: 11px; opacity: .55; }
+@media (max-width: 880px) { nav.views { margin: 0; } nav.views a[aria-current="page"] { background: var(--ink); color: var(--bg); } }
+.seg button { white-space: nowrap; font-size: 12px; }
+.app { grid-template-columns: clamp(260px, 15vw, 300px) minmax(0, 1fr); }
+@media (max-width: 880px) { .app { grid-template-columns: 1fr; } }
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
@@ -346,8 +363,8 @@ body {
 <div class="app">
   <aside>
     <div class="brand">
-      <div class="eyebrow">Muhammad Asif · collection</div>
-      <h1>GitHub Repos <span>for Claude</span> &amp; AI</h1>
+      
+      <h1>Claude <span>&amp;</span> AI Repos</h1>
       <div class="meta" id="meta"></div>
     </div>
 
@@ -990,7 +1007,7 @@ const save = () => { try { localStorage.setItem("repoFilters", JSON.stringify({ 
 
 function meta() {
   const sum = data.reduce((a, r) => a + r._stars, 0);
-  $("meta").innerHTML = `<b>${data.length}</b> repos · <b class="s">★ ${fmt(sum)}</b> stars · <b>${new Set(data.map(r => r.category)).size}</b> categories`;
+  $("meta").innerHTML = `<b>${data.length}</b> repos · <b class="s">★ ${fmt(sum)}</b> stars`;
   $("nRepos").textContent = data.length;
 }
 
