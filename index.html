@@ -384,6 +384,20 @@ nav.views .n { font-size: 11px; opacity: .55; }
 :root[data-theme="dark"] .card:hover, :root[data-theme="github"] .card:hover { border-color: color-mix(in srgb, var(--ink) 25%, var(--line)); box-shadow: 0 10px 26px -18px rgba(0,0,0,.8); }
 :root[data-theme="github"] .card:hover .go, :root[data-theme="dark"] .card:hover .go { color: var(--accent-ink); }
 .theme button { width: 34px; }
+
+/* v9: meta row + website link */
+.metarow { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); margin-top: -2px; }
+.mi { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.mi i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+.mi.fresh i { background: var(--ok); } .mi.ok i { background: var(--star); } .mi.stale i { background: var(--muted); opacity: .6; }
+.site {
+  position: relative; z-index: 2; margin-left: auto; display: inline-flex; align-items: center; gap: 5px; max-width: 46%;
+  height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted);
+  font-size: 12px; font-weight: 500; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.site svg { flex: none; }
+.site:hover { color: var(--accent); border-color: var(--accent); }
+.site + .go { margin-left: 0; }
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
@@ -1054,6 +1068,7 @@ const LOGOS = {"chatwoot": "data:image/webp;base64,UklGRqQEAABXRUJQVlA4IJgEAACwG
    it connects to (or use free models), "paid" = open source, with a paid plan or app too.
    For a new repo, add  cost: "keys"  or  cost: "paid", costNote: "Pro $10/mo"  to it above. */
 const COST = {"affaan-m/ECC": ["paid", "ECC Pro from $19/seat/mo"], "tashfeenahmed/freellmapi": ["paid", "Premium $19/yr, optional"], "farzaa/clicky": ["paid", "Clicky Pro app $20/mo"], "onyx-dot-app/onyx": ["paid", "Paid cloud & enterprise"], "lobehub/lobehub": ["paid", "Paid cloud version"], "Mintplex-Labs/anything-llm": ["paid", "Paid cloud version"], "open-webui/open-webui": ["paid", "Paid enterprise plan"], "ChatGPTNextWeb/NextChat": ["paid", "Paid hosted, pay-as-you-go"], "21st-dev/magic-mcp": ["paid", "21st.dev account, paid tiers"], "upstash/context7": ["paid", "Free tier + paid plans"], "apify/apify-mcp-server": ["paid", "Apify credits, free tier"], "TauricResearch/TradingAgents": ["keys", "Needs an AI API key or ChatGPT plan"], "ethanplusai/harvey": ["keys", "Runs on your Claude or ChatGPT plan"], "paperclipai/paperclip": ["keys", "Uses your AI agents' plans"], "elie222/rakazo": ["keys", "Bring your own model"], "milind-soni/OpenMausBot": ["keys", "Uses your Claude/Codex/Grok login"], "CopilotKit/OpenBot": ["keys", "Bring your own model"], "NousResearch/hermes-agent": ["keys", "Needs a model API key"], "openclaw/openclaw": ["keys", "Needs a model API key"], "nanocoai/nanoclaw": ["keys", "Runs on Claude (Agents SDK)"], "eigent-ai/eigent": ["keys", "Local models or API keys"], "tinyhumansai/openhuman": ["keys", "Needs a model API key"], "Anil-matcha/open-duet": ["keys", "Bring your own model"], "CopilotKit/OpenDots": ["keys", "Needs a model API key"], "CopilotKit/OpenTag": ["keys", "Needs a model API key"], "LibreChat-AI/LibreChat": ["keys", "Bring your own API keys"], "666ghj/MiroFish": ["keys", "Needs an LLM API key"], "calesthio/OpenMontage": ["keys", "Needs model API keys"], "Anil-matcha/Open-Generative-AI": ["keys", "Pay per use for image/video models"], "wide-trace/open-higgsfield": ["keys", "Needs model API keys"], "SegFault42/HeliosGen": ["keys", "Needs model API keys"], "usestrix/strix": ["keys", "Needs an LLM API key"], "deepseek-ai/deepseek-harness": ["keys", "Needs a DeepSeek or other API key"], "microsoft/JARVIS": ["keys", "Needs an OpenAI API key"], "ethanplusai/jarvis": ["keys", "Runs on your Claude plan"], "friday-platform/friday-studio": ["keys", "Needs a model API key"], "assafelovic/gpt-researcher": ["keys", "Needs an LLM API key"], "stanford-oval/storm": ["keys", "Needs an LLM API key"], "lfnovo/open-notebook": ["keys", "Local models or API keys"], "Future-House/paper-qa": ["keys", "Needs an LLM API key"], "datalab-to/marker": ["paid", "Free to self-host, hosted API paid"], "zotero/zotero": ["paid", "Extra cloud storage is paid"], "n8n-io/n8n": ["paid", "Paid n8n Cloud option"], "coollabsio/coolify": ["paid", "Paid Coolify Cloud option"]};
+const META = {};
 
 
 /* ---------- page logic (no need to edit below) ---------- */
@@ -1165,6 +1180,36 @@ const HUES = [222, 262, 158, 24, 330, 192, 44, 292, 128, 0, 205, 280];
 const CAT_H = {};
 function hueOf(c) { if (!(c in CAT_H)) CAT_H[c] = HUES[Object.keys(CAT_H).length % HUES.length]; return CAT_H[c]; }
 
+
+/* last updated / age / website, filled daily by scripts/update-stars.mjs */
+const metaOf = r => META[pathOf(r.url).toLowerCase()] || null;
+const DAY = 864e5;
+function ago(iso) {
+  const d = Math.max(0, Math.floor((Date.now() - Date.parse(iso)) / DAY));
+  if (d < 1) return "today"; if (d < 2) return "yesterday"; if (d < 30) return d + " days ago";
+  if (d < 365) { const m = Math.floor(d / 30); return m + (m > 1 ? " months ago" : " month ago"); }
+  const y = Math.floor(d / 365); return y + (y > 1 ? " years ago" : " year ago");
+}
+function age(iso) {
+  const d = (Date.now() - Date.parse(iso)) / DAY;
+  if (d < 60) return "new";
+  if (d < 365) return Math.floor(d / 30) + " mo old";
+  const y = d / 365; return (y < 2 ? y.toFixed(1).replace(/\.0$/, "") : Math.floor(y)) + " yrs old";
+}
+function freshClass(iso) { const d = (Date.now() - Date.parse(iso)) / DAY; return d < 30 ? "fresh" : d < 180 ? "ok" : "stale"; }
+function metaRow(r) {
+  const m = metaOf(r); if (!m) return "";
+  const parts = [];
+  if (m.u) parts.push(`<span class="mi ${m.a ? "stale" : freshClass(m.u)}" title="Last commit ${esc(m.u.slice(0, 10))}"><i></i>${m.a ? "Archived" : "Updated " + ago(m.u)}</span>`);
+  if (m.c) parts.push(`<span class="mi" title="Created ${esc(m.c.slice(0, 10))}">Since ${m.c.slice(0, 4)} · ${age(m.c)}</span>`);
+  return `<div class="metarow">${parts.join("")}</div>`;
+}
+function siteBtn(r) {
+  const m = metaOf(r); if (!m || !m.h) return "";
+  let host = m.h; try { host = new URL(m.h).hostname.replace(/^www\./, ""); } catch (e) {}
+  return `<a class="site" href="${esc(m.h)}" target="_blank" rel="noopener" title="${esc(m.h)}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${esc(host)}</a>`;
+}
+
 function render() {
   const q = state.q.trim().toLowerCase();
   let shown = data
@@ -1200,10 +1245,11 @@ function render() {
         <div class="stars">${r._stars ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>${fmt(r._stars)}` : "–"}<small>stars</small></div>
       </div>
       <p class="desc">${esc(r.description)}</p>
+      ${metaRow(r)}
       <div class="foot">
         <span class="costb cost-${r._cost}" title="${esc(COST_HELP[r._cost])}">${COST_LABEL[r._cost]}${r._costNote ? ` · ${esc(r._costNote)}` : ""}</span>
         <span class="cat">${esc(r.category)}</span>
-        <span class="go" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+        ${siteBtn(r)}<span class="go" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
       </div>
     </article>`).join("") : `<div class="empty">No repos match. Try another word or clear the filters.</div>`;
 }
