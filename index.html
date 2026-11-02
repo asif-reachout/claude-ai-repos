@@ -350,8 +350,18 @@ nav.views svg { width: 15px; height: 15px; opacity: .7; }
 nav.views .n { font-size: 11px; opacity: .55; }
 @media (max-width: 880px) { nav.views { margin: 0; } nav.views a[aria-current="page"] { background: var(--ink); color: var(--bg); } }
 .seg button { white-space: nowrap; font-size: 12px; }
-.app { grid-template-columns: clamp(260px, 15vw, 300px) minmax(0, 1fr); }
+.app { grid-template-columns: clamp(282px, 16vw, 310px) minmax(0, 1fr); }
 @media (max-width: 880px) { .app { grid-template-columns: 1fr; } }
+
+/* v7: category icons */
+.list .ci { flex: none; color: var(--muted); opacity: .9; }
+.list button[aria-pressed="true"] .ci { color: inherit; opacity: 1; }
+.list button:hover .ci { color: var(--ink); }
+.list { grid-template-columns: minmax(0, 1fr); }
+.list button { min-width: 0; }
+.list .n { flex: none; padding-left: 6px; }
+.list button { font-size: 13px; gap: 9px; }
+.list .cl { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
@@ -947,37 +957,37 @@ const repos = [
   // Add new repos below this line 👇
   { name: "Chatwoot", url: "https://github.com/chatwoot/chatwoot",
     description: "Open-source alternative to Intercom, Zendesk and Freshchat: one team inbox for WhatsApp (official Cloud API), website chat, email, Instagram and more, with AI replies and agent handover.",
-    category: "WhatsApp Chatbots & Helpdesk", tag: "38.7k stars", cost: "paid", costNote: "Paid Chatwoot Cloud option" },
+    category: "WhatsApp Helpdesk & Bots", tag: "38.7k stars", cost: "paid", costNote: "Paid Chatwoot Cloud option" },
   { name: "Typebot", url: "https://github.com/baptisteArno/typebot.io",
     description: "Drag-and-drop chatbot builder you can self-host. Bots run on your website or on WhatsApp, with OpenAI blocks and webhooks.",
-    category: "WhatsApp Chatbots & Helpdesk", tag: "10.6k stars", cost: "paid", costNote: "Paid cloud plans; fair-source licence" },
+    category: "WhatsApp Helpdesk & Bots", tag: "10.6k stars", cost: "paid", costNote: "Paid cloud plans; fair-source licence" },
   { name: "Botpress", url: "https://github.com/botpress/botpress",
     description: "Builder for GPT/LLM chat agents with a ready WhatsApp integration. The main product is Botpress Cloud; this repo holds the open SDK and integrations.",
-    category: "WhatsApp Chatbots & Helpdesk", tag: "15k stars", cost: "paid", costNote: "Botpress Cloud is paid beyond free tier" },
+    category: "WhatsApp Helpdesk & Bots", tag: "15k stars", cost: "paid", costNote: "Botpress Cloud is paid beyond free tier" },
   { name: "Rasa", url: "https://github.com/RasaHQ/rasa",
     description: "Open-source framework for building your own text and voice assistants in Python. Connects to WhatsApp through Twilio or custom channels.",
-    category: "WhatsApp Chatbots & Helpdesk", tag: "21.4k stars", cost: "paid", costNote: "Rasa Pro is paid" },
+    category: "WhatsApp Helpdesk & Bots", tag: "21.4k stars", cost: "paid", costNote: "Rasa Pro is paid" },
   { name: "Zammad", url: "https://github.com/zammad/zammad",
     description: "Self-hosted helpdesk and ticketing (like Zendesk/Freshdesk) with a built-in WhatsApp Business channel: every chat becomes a ticket.",
-    category: "WhatsApp Chatbots & Helpdesk", tag: "6.1k stars", cost: "paid", costNote: "Paid hosted plans" },
+    category: "WhatsApp Helpdesk & Bots", tag: "6.1k stars", cost: "paid", costNote: "Paid hosted plans" },
   { name: "FreeScout", url: "https://github.com/freescout-help-desk/freescout",
     description: "Free self-hosted helpdesk and shared inbox, a Help Scout/Zendesk alternative. WhatsApp, Telegram and AI come as add-on modules.",
-    category: "WhatsApp Chatbots & Helpdesk", tag: "4.6k stars", cost: "paid", costNote: "WhatsApp module is a paid add-on" },
+    category: "WhatsApp Helpdesk & Bots", tag: "4.6k stars", cost: "paid", costNote: "WhatsApp module is a paid add-on" },
   { name: "Whaticket Community", url: "https://github.com/canove/whaticket-community",
     description: "Simple ticket system on top of WhatsApp: many agents share one number, each chat becomes a ticket. Uses unofficial WhatsApp Web, so use a spare number.",
-    category: "WhatsApp Chatbots & Helpdesk", tag: "2.1k stars" },
+    category: "WhatsApp Helpdesk & Bots", tag: "2.1k stars" },
   { name: "erxes", url: "https://github.com/erxes/erxes",
     description: "Open-source HubSpot alternative that combines marketing, sales, support inbox and operations in one self-hosted platform.",
-    category: "WhatsApp Chatbots & Helpdesk", tag: "4.1k stars", cost: "paid", costNote: "Paid cloud plans" },
+    category: "WhatsApp Helpdesk & Bots", tag: "4.1k stars", cost: "paid", costNote: "Paid cloud plans" },
   { name: "Twenty CRM", url: "https://github.com/twentyhq/twenty",
     description: "Modern open-source CRM, an alternative to Salesforce and HubSpot CRM, built for AI and easy to self-host.",
-    category: "WhatsApp Chatbots & Helpdesk", tag: "60.3k stars", cost: "paid", costNote: "Paid Twenty Cloud option" },
+    category: "WhatsApp Helpdesk & Bots", tag: "60.3k stars", cost: "paid", costNote: "Paid Twenty Cloud option" },
   { name: "Mautic", url: "https://github.com/mautic/mautic",
     description: "Open-source marketing automation (emails, campaigns, lead scoring, landing pages), a self-hosted alternative to HubSpot Marketing.",
-    category: "WhatsApp Chatbots & Helpdesk", tag: "10.9k stars" },
+    category: "WhatsApp Helpdesk & Bots", tag: "10.9k stars" },
   { name: "Dify", url: "https://github.com/langgenius/dify",
     description: "Build AI chatbots, agents and RAG knowledge bases visually, then plug them into WhatsApp through Chatwoot, n8n or an API.",
-    category: "WhatsApp Chatbots & Helpdesk", tag: "160.2k stars", cost: "keys", costNote: "Needs a model API key; paid Dify Cloud too" },
+    category: "WhatsApp Helpdesk & Bots", tag: "160.2k stars", cost: "keys", costNote: "Needs a model API key; paid Dify Cloud too" },
   { name: "ntfy", url: "https://github.com/binwiederhier/ntfy",
     description: "Send push notifications to your phone or desktop with one simple HTTP call (curl). Free to self-host or use the public ntfy.sh server; great for bot and script alerts.",
     category: "Notifications & WhatsApp", tag: "35.2k stars", cost: "paid", costNote: "Optional ntfy Pro on ntfy.sh" },
@@ -1074,12 +1084,34 @@ function meta() {
   $("nRepos").textContent = data.length;
 }
 
+
+const CAT_ICON = {
+  "": '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  "Claude Skills & Tools": '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>',
+  "ChatGPT Alternatives": '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+  "Trading, Agents & Automation": '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+  "Trading Bots": '<rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 17h6"/>',
+  "Grok Bot Alternatives": '<path d="M5 5l14 14M19 5L5 19"/>',
+  "Notifications & WhatsApp": '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/>',
+  "WhatsApp Helpdesk & Bots": '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/>',
+  "ElevenLabs Alternatives": '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/>',
+  "MCP Servers": '<path d="M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0zM12 18v4"/>',
+  "Jarvis & Friday Assistants": '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/>',
+  "Research & Thesis": '<path d="M22 9L12 4 2 9l10 5 10-5z"/><path d="M6 11v5c3 3 9 3 12 0v-5"/>',
+  "Agent Workflows": '<rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="15" y="15" width="6" height="6" rx="1.5"/><path d="M6 9v4a3 3 0 0 0 3 3h6"/>',
+  "Free Resources": '<rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8S10 3 7.5 4.5 9 8 12 8zM12 8s2-5 4.5-3.5S15 8 12 8z"/>',
+  "Higgsfield Alternatives": '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/>',
+  "Deploy & Automation": '<path d="M5 15c-1.5 1.5-2 5-2 5s3.5-.5 5-2"/><path d="M9 15l-3-3c1-4 4-8 12-9-1 8-5 11-9 12z"/><circle cx="14.5" cy="9.5" r="1.5"/>',
+  "Code Samples": '<path d="M8 6l-6 6 6 6M16 6l6 6-6 6"/>'
+};
+const catIcon = c => `<svg class="ci" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${CAT_ICON[c] || '<circle cx="12" cy="12" r="3"/>'}</svg>`;
+
 function buildFilters() {
   const counts = {};
   data.forEach(r => counts[r.category] = (counts[r.category] || 0) + 1);
   const cats = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
   $("cats").innerHTML = [["", "All categories", data.length], ...cats.map(c => [c, c, counts[c]])].map(([v, l, n]) =>
-    `<button type="button" data-v="${esc(v)}" aria-pressed="${state.cat === v}">${esc(l)}<span class="n">${n}</span></button>`).join("");
+    `<button type="button" data-v="${esc(v)}" aria-pressed="${state.cat === v}">${catIcon(v)}<span class="cl" title="${esc(l)}">${esc(l)}</span><span class="n">${n}</span></button>`).join("");
   const cc = { free: 0, keys: 0, paid: 0 };
   data.forEach(r => cc[r._cost]++);
   $("costs").innerHTML = [["", "Any cost", data.length], ["free", COST_LABEL.free, cc.free], ["keys", COST_LABEL.keys, cc.keys], ["paid", COST_LABEL.paid, cc.paid]].map(([v, l, n]) =>
