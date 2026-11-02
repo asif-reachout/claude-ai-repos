@@ -329,6 +329,12 @@ body {
   .logo { grid-row: span 2; align-self: start; }
   .stars { grid-column: 2; justify-self: start; }
 }
+
+/* v5: calm cards — no colored top line or tint */
+.card { background: var(--surface); }
+.card::before { content: none; }
+.card:hover { border-color: color-mix(in srgb, var(--ink) 22%, var(--line)); box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 16px 32px -20px rgba(0,0,0,.45); }
+.card:hover .go { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
