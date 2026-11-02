@@ -1,0 +1,29 @@
+name: Send daily report to WhatsApp
+
+on:
+  push:
+    branches: [main]
+    paths: ["reports/latest.md"]
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send via CallMeBot (free, personal use)
+        env:
+          WA_PHONE: ${{ secrets.WA_PHONE }}
+          WA_APIKEY: ${{ secrets.WA_APIKEY }}
+        run: |
+          if [ -z "$WA_PHONE" ] || [ -z "$WA_APIKEY" ]; then
+            echo "WA_PHONE / WA_APIKEY secrets not set, skipping."; exit 0
+          fi
+          # WhatsApp via CallMeBot: keep it short (URL length limit)
+          TEXT=$(head -c 3000 reports/latest.md)
+          code=$(curl -s -o /tmp/out.txt -w "%{http_code}" -G "https://api.callmebot.com/whatsapp.php" \
+            --data-urlencode "phone=$WA_PHONE" \
+            --data-urlencode "text=$TEXT" \
+            --data-urlencode "apikey=$WA_APIKEY")
+          echo "HTTP $code"; head -c 400 /tmp/out.txt; echo
+          [ "$code" = "200" ]

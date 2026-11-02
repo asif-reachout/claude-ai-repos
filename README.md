@@ -31,3 +31,7 @@ Open `index.html`, find `const repos = [` and copy one block below the line `// 
 - The logo comes from the owner's GitHub picture.
 - For cost, add `cost: "keys"` or `cost: "paid", costNote: "Pro $10/mo"`. Leave it out for free tools.
 - The star count is corrected by the daily update.
+
+## Daily report on WhatsApp
+
+A scheduled Claude task writes `reports/latest.md` every morning. When that file changes, `.github/workflows/whatsapp-report.yml` sends it to WhatsApp through the free [CallMeBot](https://www.callmebot.com/blog/free-api-whatsapp-messages/) API (personal use only). It needs two repo secrets: `WA_PHONE` (with country code, e.g. `+60…`) and `WA_APIKEY`.
