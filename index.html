@@ -408,6 +408,27 @@ nav.views .n { font-size: 11px; opacity: .55; }
 .mb.stale { background: color-mix(in srgb, var(--muted) 14%, transparent); color: var(--muted); border-color: var(--line); }
 .mb.age { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); border-color: var(--line); font-weight: 500; }
 .mb.nr { background: var(--accent-soft); color: var(--accent); border-color: color-mix(in srgb, var(--accent) 25%, transparent); }
+
+/* v11: activity filter + quick filter bar */
+.dot.f-fresh { background: var(--ok); } .dot.f-ok { background: var(--star); } .dot.f-stale { background: var(--muted); opacity: .55; } .dot.f-norepo { background: var(--accent); } .dot.f-all { background: var(--muted); opacity: .4; }
+.mhead { margin-bottom: 12px; }
+.qbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin: 0 0 16px; }
+.qgroup, .qsort { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.qlabel { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+.qchip {
+  display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 12.5px; font-weight: 500; cursor: pointer;
+}
+.qchip:hover { border-color: color-mix(in srgb, var(--ink) 30%, var(--line)); }
+.qchip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.qsort select {
+  height: 30px; padding: 0 28px 0 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  font: inherit; font-size: 12.5px; font-weight: 500; cursor: pointer; appearance: none; -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 15px) 13px, calc(100% - 11px) 13px; background-size: 4px 4px; background-repeat: no-repeat;
+}
+@media (min-width: 1100px) { .qsort { margin-left: auto; } }
+.active:empty { display: none; }
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
@@ -462,6 +483,10 @@ nav.views .n { font-size: 11px; opacity: .55; }
         <div class="list" id="costs"></div>
       </div>
       <div class="fgroup">
+        <div class="flabel">Activity</div>
+        <div class="list" id="freshs"></div>
+      </div>
+      <div class="fgroup">
         <div class="flabel">Stars</div>
         <div class="chips" id="mins"></div>
       </div>
@@ -473,6 +498,7 @@ nav.views .n { font-size: 11px; opacity: .55; }
   <main>
     <section id="v-repos">
       <div class="mhead"><h2 id="mtitle">All repos</h2><span class="sub" id="count"></span></div>
+      <div class="qbar" id="qbar"></div>
       <div class="active" id="active"></div>
       <div class="grid" id="list"></div>
       <div class="legend">
@@ -1121,16 +1147,17 @@ const data = repos.map((r, i) => {
   return { ...r, category: r.category || "Other", _i: i, _stars: parseStars(r.tag),
            _cost: r.cost || c[0] || "free", _costNote: r.costNote || c[1] || "" };
 });
-const MINS = [[0, "Any"], [10000, "10k+"], [50000, "50k+"], [100000, "100k+"], [200000, "200k+"]];
-const SORTS = ["stars-desc", "stars-asc", "name", "newest"];
+const MINS = [[0, "Any"], [1000, "1k+"], [10000, "10k+"], [50000, "50k+"], [100000, "100k+"], [200000, "200k+"], [300000, "300k+"], [400000, "400k+"]];
+const SORTS = ["stars-desc", "stars-asc", "name", "newest", "updated"];
 
-const state = { q: "", sort: "stars-desc", cat: "", min: 0, cost: "" };
+const state = { q: "", sort: "stars-desc", cat: "", min: 0, cost: "", fresh: "" };
 try { Object.assign(state, JSON.parse(localStorage.getItem("repoFilters") || "{}")); state.q = ""; } catch (e) {}
 if (!SORTS.includes(state.sort)) state.sort = "stars-desc";
 if (state.cat && !data.some(r => r.category === state.cat)) state.cat = "";
 if (!["", "free", "keys", "paid"].includes(state.cost)) state.cost = "";
+if (!["", "fresh", "ok", "stale", "norepo"].includes(state.fresh)) state.fresh = "";
 if (!MINS.some(([v]) => v === state.min)) state.min = 0;
-const save = () => { try { localStorage.setItem("repoFilters", JSON.stringify({ sort: state.sort, cat: state.cat, min: state.min, cost: state.cost })); } catch (e) {} };
+const save = () => { try { localStorage.setItem("repoFilters", JSON.stringify({ sort: state.sort, cat: state.cat, min: state.min, cost: state.cost, fresh: state.fresh })); } catch (e) {} };
 
 function meta() {
   const sum = data.reduce((a, r) => a + r._stars, 0);
@@ -1160,6 +1187,14 @@ const CAT_ICON = {
 };
 const catIcon = c => `<svg class="ci" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${CAT_ICON[c] || '<circle cx="12" cy="12" r="3"/>'}</svg>`;
 
+
+const FRESH_LABEL = { fresh: "Updated this month", ok: "Last 6 months", stale: "Older or archived", norepo: "No GitHub repo" };
+const FRESH_SHORT = { fresh: "Active", ok: "6 months", stale: "Old", norepo: "No repo" };
+function freshOf(r) {
+  if (!/github\.com/i.test(r.url)) return "norepo";
+  const m = metaOf(r); if (!m || !m.u) return "";
+  return m.a ? "stale" : freshClass(m.u);
+}
 function buildFilters() {
   const counts = {};
   data.forEach(r => counts[r.category] = (counts[r.category] || 0) + 1);
@@ -1170,6 +1205,15 @@ function buildFilters() {
   data.forEach(r => cc[r._cost]++);
   $("costs").innerHTML = [["", "Any cost", data.length], ["free", COST_LABEL.free, cc.free], ["keys", COST_LABEL.keys, cc.keys], ["paid", COST_LABEL.paid, cc.paid]].map(([v, l, n]) =>
     `<button type="button" data-v="${v}" aria-pressed="${state.cost === v}" title="${v ? esc(COST_HELP[v]) : ""}"><span class="dot ${v || "all"}"></span>${l}<span class="n">${n}</span></button>`).join("");
+  const fc = { fresh: 0, ok: 0, stale: 0, norepo: 0 };
+  data.forEach(r => { const f = freshOf(r); if (f) fc[f]++; });
+  $("freshs").innerHTML = [["", "Any activity", data.length], ...Object.keys(FRESH_LABEL).map(k => [k, FRESH_LABEL[k], fc[k]])].map(([v, l, n]) =>
+    `<button type="button" data-v="${v}" aria-pressed="${state.fresh === v}"><span class="dot f-${v || "all"}"></span>${l}<span class="n">${n}</span></button>`).join("");
+  const qchip = (k, v, l, cls) => `<button type="button" class="qchip" data-k="${k}" data-v="${v}" aria-pressed="${state[k] === v}"><span class="dot ${cls}"></span>${l}</button>`;
+  $("qbar").innerHTML =
+    `<div class="qgroup"><span class="qlabel">Activity</span>${["fresh", "ok", "stale"].map(k => qchip("fresh", k, FRESH_SHORT[k], "f-" + k)).join("")}</div>` +
+    `<div class="qgroup"><span class="qlabel">Cost</span>${qchip("cost", "free", "Free", "free")}${qchip("cost", "keys", "Pay for AI", "keys")}${qchip("cost", "paid", "Paid plan", "paid")}</div>` +
+    `<label class="qsort"><span class="qlabel">Sort</span><select id="qsort">${[["stars-desc", "Most stars"], ["stars-asc", "Fewest stars"], ["updated", "Recently updated"], ["newest", "Newest added"], ["name", "A–Z"]].map(([v, l]) => `<option value="${v}"${state.sort === v ? " selected" : ""}>${l}</option>`).join("")}</select></label>`;
   $("mins").innerHTML = MINS.map(([v, l]) => `<button type="button" class="chip" data-v="${v}" aria-pressed="${state.min === v}">${v ? "★ " : ""}${l}</button>`).join("");
   document.querySelectorAll("#sort button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === state.sort));
 }
@@ -1241,10 +1285,12 @@ function render() {
     .filter(r => !q || [r.name, r.description, r.url, r.category, r._costNote].join(" ").toLowerCase().includes(q))
     .filter(r => !state.cat || r.category === state.cat)
     .filter(r => r._stars >= state.min)
-    .filter(r => !state.cost || r._cost === state.cost);
+    .filter(r => !state.cost || r._cost === state.cost)
+    .filter(r => !state.fresh || freshOf(r) === state.fresh);
   if (state.sort === "stars-desc") shown.sort((a, b) => b._stars - a._stars);
   else if (state.sort === "stars-asc") shown.sort((a, b) => a._stars - b._stars);
   else if (state.sort === "name") shown.sort((a, b) => a.name.localeCompare(b.name));
+  else if (state.sort === "updated") { const u = r => { const m = metaOf(r); return m && m.u ? Date.parse(m.u) : 0; }; shown.sort((a, b) => u(b) - u(a)); }
   else shown.sort((a, b) => b._i - a._i);
 
   $("mtitle").textContent = state.cat || "All repos";
@@ -1255,6 +1301,7 @@ function render() {
   if (state.cost) act.push(["cost", COST_LABEL[state.cost]]);
   if (state.min) act.push(["min", `★ ${fmt(state.min)}+`]);
   if (state.cat) act.push(["cat", state.cat]);
+  if (state.fresh) act.push(["fresh", FRESH_LABEL[state.fresh]]);
   $("active").innerHTML = act.map(([k, l]) => `<button type="button" class="tag-x" data-k="${k}">${esc(l)}<span aria-label="Remove">×</span></button>`).join("");
   $("active").hidden = !act.length;
   $("clearAll").hidden = !act.length;
@@ -1285,13 +1332,16 @@ $("sort").addEventListener("click", e => { const b = e.target.closest("button");
 $("cats").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; state.cat = b.dataset.v; save(); buildFilters(); render(); });
 $("costs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; state.cost = b.dataset.v; save(); buildFilters(); render(); });
 $("mins").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; state.min = Number(b.dataset.v); save(); buildFilters(); render(); });
+$("freshs").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; state.fresh = b.dataset.v; save(); buildFilters(); render(); });
+$("qbar").addEventListener("click", e => { const b = e.target.closest(".qchip"); if (!b) return; const k = b.dataset.k; state[k] = state[k] === b.dataset.v ? "" : b.dataset.v; save(); buildFilters(); render(); });
+$("qbar").addEventListener("change", e => { if (e.target.id !== "qsort") return; state.sort = e.target.value; save(); buildFilters(); render(); });
 $("active").addEventListener("click", e => {
   const b = e.target.closest(".tag-x"); if (!b) return;
   const k = b.dataset.k;
   if (k === "q") { state.q = ""; $("q").value = ""; } else if (k === "min") state.min = 0; else state[k] = "";
   save(); buildFilters(); render();
 });
-$("clearAll").addEventListener("click", () => { Object.assign(state, { q: "", cat: "", min: 0, cost: "" }); $("q").value = ""; save(); buildFilters(); render(); });
+$("clearAll").addEventListener("click", () => { Object.assign(state, { q: "", cat: "", min: 0, cost: "", fresh: "" }); $("q").value = ""; save(); buildFilters(); render(); });
 $("ftoggle").addEventListener("click", () => {
   const f = $("filters"); const open = f.classList.toggle("collapsed") === false;
   $("ftoggle").setAttribute("aria-expanded", open);
