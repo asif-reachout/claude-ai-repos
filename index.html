@@ -613,6 +613,11 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 24px 56px; padding-lef
 .search input:focus, .search input:focus-visible { outline: none !important; border-color: var(--accent); box-shadow: none; }
 .hero .search input { border: 1px solid var(--line); }
 .hero .search input:focus { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+/* ===== v16: violet accent (user's pick); paid plans in blue ===== */
+:root, :root[data-theme="light"] { --accent: #6d28d9; --accent-ink: #ffffff; --accent-soft: #efe7fd; --paid: #1d4ed8; --paid-soft: #e3ebfd; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent: #a78bfa; --accent-ink: #140b2b; --accent-soft: #2a2147; --paid: #60a5fa; --paid-soft: #172a45; } }
+:root[data-theme="dark"], :root[data-theme="github"] { --accent: #a78bfa; --accent-ink: #140b2b; --accent-soft: #2a2147; --paid: #60a5fa; --paid-soft: #172a45; }
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>try{var t=localStorage.getItem("theme");if(!t&&matchMedia("(prefers-color-scheme: dark)").matches)t="github";if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
