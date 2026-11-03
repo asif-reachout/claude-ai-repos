@@ -135,6 +135,12 @@ main {
 .tag-x span { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: var(--line); font-size: 12px; }
 .tag-x:hover span { background: var(--accent); color: var(--accent-ink); }
 
+.newbox { max-width: 1400px; margin: 0 0 26px; padding: 14px; border-radius: 16px; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line)); }
+.newhead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 2px 12px; }
+.newhead h3 { margin: 0; font-family: var(--f-display); font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+.newhead .sub { color: var(--muted); font-size: 13px; }
+.newpill, .newb { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: 11px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
+.newb { height: 18px; padding: 0 6px; font-size: 10px; margin-left: 6px; vertical-align: 2px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 12px; max-width: 1400px; }
 .card {
   position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 15px 15px 13px;
@@ -500,6 +506,10 @@ nav.views .n { font-size: 11px; opacity: .55; }
       <div class="mhead"><h2 id="mtitle">All repos</h2><span class="sub" id="count"></span></div>
       <div class="qbar" id="qbar"></div>
       <div class="active" id="active"></div>
+      <div class="newbox" id="newbox" hidden>
+        <div class="newhead"><span class="newpill">New</span><h3>Added this week</h3><span class="sub" id="newcount"></span></div>
+        <div class="grid" id="newlist"></div>
+      </div>
       <div class="grid" id="list"></div>
       <div class="legend">
         <div><span class="costb cost-free">Free</span> nothing to pay for the tool itself.</div>
@@ -672,6 +682,7 @@ Code: [paste]</pre><button class="copy" type="button">Copy</button></div></div><
    - description: what it does
    - category:    section heading (a new category creates a new section)
    - tag:         optional small label, e.g. "115k stars" (use "" for none)
+   - added:       date added, e.g. "2026-11-03" (shows in "Added this week" for 7 days)
    ============================================================ */
 const repos = [
   // ---- From the image ----
@@ -1030,19 +1041,19 @@ const repos = [
   // Add new repos below this line 👇
   { name: "Open Design", url: "https://github.com/nexu-io/open-design",
     description: "Open-source, local-first alternative to Claude Design. Generate UI designs and prototypes with your own model keys or a local model via Ollama.",
-    category: "Claude Skills & Tools", tag: "105.6k stars", cost: "keys" },
+    category: "Claude Skills & Tools", tag: "105.6k stars", cost: "keys" , added: "2026-11-02" },
   { name: "Claude Code Game Studios", url: "https://github.com/Donchitos/Claude-Code-Game-Studios",
     description: "Turns Claude Code into a full game development studio with 49 specialised agents and 72 workflow skills.",
-    category: "Claude Skills & Tools", tag: "33.7k stars" },
+    category: "Claude Skills & Tools", tag: "33.7k stars" , added: "2026-11-02" },
   { name: "Mem0", url: "https://github.com/mem0ai/mem0",
     description: "Memory layer for AI agents and apps, so your assistant remembers users and past conversations. Self-host it for free.",
-    category: "Agent Workflows", tag: "68.3k stars", cost: "paid", costNote: "Optional hosted cloud plan" },
+    category: "Agent Workflows", tag: "68.3k stars", cost: "paid", costNote: "Optional hosted cloud plan" , added: "2026-11-02" },
   { name: "Firecrawl", url: "https://github.com/firecrawl/firecrawl",
     description: "Turns any website into clean markdown or structured data that AI agents can use. Has an MCP server too.",
-    category: "MCP Servers", tag: "198.1k stars", cost: "paid", costNote: "Hosted API is paid; self-host is free" },
+    category: "MCP Servers", tag: "198.1k stars", cost: "paid", costNote: "Hosted API is paid; self-host is free" , added: "2026-11-02" },
   { name: "OpenCode", url: "https://github.com/anomalyco/opencode",
     description: "Open-source terminal coding agent, a free alternative to Claude Code that works with many model providers and has a plugin system.",
-    category: "ChatGPT Alternatives", tag: "224.1k stars", cost: "keys" },
+    category: "ChatGPT Alternatives", tag: "224.1k stars", cost: "keys" , added: "2026-11-02" },
   { name: "Marketing Skills", url: "https://github.com/coreyhaines31/marketingskills",
     description: "Big set of marketing skills for Claude Code: social content for Instagram, LinkedIn and X, copywriting, SEO, ads, launch plans and growth ideas.",
     category: "Social Media & YouTube", tag: "58.1k stars" },
@@ -1328,6 +1339,27 @@ function siteBtn(r) {
   return `<a class="site" href="${esc(m.h)}" target="_blank" rel="noopener" title="${esc(m.h)}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>${esc(host)}</a>`;
 }
 
+const NEW_DAYS = 7;
+function isNew(r) { return !!r.added && (Date.now() - Date.parse(r.added)) / 864e5 < NEW_DAYS; }
+function cardHtml(r) { return `
+    <article class="card" style="--h:${hueOf(r.category)}">
+      <div class="head">
+        ${logoHtml(r)}
+        <div class="title">
+          <h3 class="name"><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.name)}</a>${isNew(r) ? `<span class="newb">New</span>` : ""}</h3>
+          <div class="path">${esc(/github\.com/i.test(r.url) ? pathOf(r.url) : r.url.replace(/^https?:\/\/(www\.)?/i, "").split("/")[0] + " · not on GitHub")}</div>
+        </div>
+        ${r._stars ? `<div class="stars">${r._stars ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>${fmt(r._stars)}` : "–"}<small>stars</small></div>` : ""}
+      </div>
+      <p class="desc">${esc(r.description)}</p>
+      ${metaRow(r)}
+      <div class="foot">
+        <span class="costb cost-${r._cost}" title="${esc(COST_HELP[r._cost])}">${COST_LABEL[r._cost]}${r._costNote ? ` · ${esc(r._costNote)}` : ""}</span>
+        <span class="cat">${esc(r.category)}</span>
+        ${siteBtn(r)}<span class="go" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+      </div>
+    </article>`; }
+
 function render() {
   const q = state.q.trim().toLowerCase();
   let shown = data
@@ -1355,24 +1387,13 @@ function render() {
   $("active").hidden = !act.length;
   $("clearAll").hidden = !act.length;
 
-  $("list").innerHTML = shown.length ? shown.map(r => `
-    <article class="card" style="--h:${hueOf(r.category)}">
-      <div class="head">
-        ${logoHtml(r)}
-        <div class="title">
-          <h3 class="name"><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.name)}</a></h3>
-          <div class="path">${esc(/github\.com/i.test(r.url) ? pathOf(r.url) : r.url.replace(/^https?:\/\/(www\.)?/i, "").split("/")[0] + " · not on GitHub")}</div>
-        </div>
-        ${r._stars ? `<div class="stars">${r._stars ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>${fmt(r._stars)}` : "–"}<small>stars</small></div>` : ""}
-      </div>
-      <p class="desc">${esc(r.description)}</p>
-      ${metaRow(r)}
-      <div class="foot">
-        <span class="costb cost-${r._cost}" title="${esc(COST_HELP[r._cost])}">${COST_LABEL[r._cost]}${r._costNote ? ` · ${esc(r._costNote)}` : ""}</span>
-        <span class="cat">${esc(r.category)}</span>
-        ${siteBtn(r)}<span class="go" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
-      </div>
-    </article>`).join("") : `<div class="empty">No repos match. Try another word or clear the filters.</div>`;
+  const plain = !q && !state.cat && !state.min && !state.cost && !state.fresh;
+  const fresh = plain ? shown.filter(isNew).sort((a, b) => b._i - a._i) : [];
+  $("newbox").hidden = !fresh.length;
+  $("newcount").textContent = fresh.length ? `${fresh.length} new` : "";
+  $("newlist").innerHTML = fresh.map(cardHtml).join("");
+  const rest = fresh.length ? shown.filter(r => !isNew(r)) : shown;
+  $("list").innerHTML = rest.length ? rest.map(cardHtml).join("") : (fresh.length ? "" : `<div class="empty">No repos match. Try another word or clear the filters.</div>`);
 }
 
 /* filters events */
