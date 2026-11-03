@@ -8,7 +8,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap">
 <style>
 /* Layout: app shell — sticky left sidebar (views + all filters), main column with a compact card grid; guides are their own views */
 :root {
@@ -618,6 +618,13 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 24px 56px; padding-lef
 :root, :root[data-theme="light"] { --accent: #6d28d9; --accent-ink: #ffffff; --accent-soft: #efe7fd; --paid: #1d4ed8; --paid-soft: #e3ebfd; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent: #a78bfa; --accent-ink: #140b2b; --accent-soft: #2a2147; --paid: #60a5fa; --paid-soft: #172a45; } }
 :root[data-theme="dark"], :root[data-theme="github"] { --accent: #a78bfa; --accent-ink: #140b2b; --accent-soft: #2a2147; --paid: #60a5fa; --paid-soft: #172a45; }
+
+/* ===== v17: Geist font; repo names in ink (black / white) ===== */
+:root { --f-display: "Geist", "Inter", system-ui, -apple-system, sans-serif; --f-body: "Geist", "Inter", system-ui, -apple-system, sans-serif; --f-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace; }
+body { font-feature-settings: "ss01", "cv11"; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; letter-spacing: -0.005em; }
+.card .name, .card .name a, .pick-t b { color: var(--ink) !important; font-weight: 650; letter-spacing: -0.01em; }
+.card:hover .name a { color: var(--accent) !important; }
+.hero-top h2, .mhead h2, .goal-h h3 { letter-spacing: -0.025em; }
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>try{var t=localStorage.getItem("theme");if(!t&&matchMedia("(prefers-color-scheme: dark)").matches)t="github";if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
