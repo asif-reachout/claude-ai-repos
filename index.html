@@ -435,6 +435,24 @@ nav.views .n { font-size: 11px; opacity: .55; }
 }
 @media (min-width: 1100px) { .qsort { margin-left: auto; } }
 .active:empty { display: none; }
+
+/* v12: "What can I do?" goals view */
+.goals { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 16px; align-items: start; }
+.goal { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 14px; box-shadow: var(--shadow); }
+.goal-h { display: flex; gap: 12px; align-items: flex-start; }
+.goal-ic { flex: none; width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.goal-h h3 { font-family: var(--f-display); font-size: 17px; font-weight: 700; margin: 0 0 3px; letter-spacing: -0.01em; }
+.goal-h p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.goal-start { font-size: 13.5px; background: var(--ok-soft); color: var(--ink); border-radius: 10px; padding: 10px 12px; }
+.goal-start b { display: block; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ok); margin-bottom: 2px; }
+.picks { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.pick { display: flex; gap: 11px; align-items: flex-start; padding: 8px; margin: 0 -8px; border-radius: 10px; color: inherit; text-decoration: none; }
+.pick:hover { background: color-mix(in srgb, var(--line) 55%, transparent); }
+.pick .logo { width: 32px; height: 32px; border-radius: 8px; font-size: 13px; }
+.pick-t { display: grid; grid-template-columns: auto 1fr; column-gap: 8px; align-items: baseline; min-width: 0; }
+.pick-t b { font-size: 14px; font-weight: 600; }
+.pick-t small { font-family: var(--f-mono); font-size: 11px; color: var(--star); }
+.pick-t span { grid-column: 1 / -1; font-size: 13px; color: var(--muted); line-height: 1.45; }
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
@@ -452,6 +470,9 @@ nav.views .n { font-size: 11px; opacity: .55; }
     </div>
 
     <nav class="views" aria-label="Views">
+      <a href="#use-cases" data-view="use-cases">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+        What can I do? <span class="n" id="nGoals"></span></a>
       <a href="#repos" data-view="repos">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
         Repos <span class="n" id="nRepos"></span></a>
@@ -625,6 +646,11 @@ export ANTHROPIC_API_KEY=""</pre><button class="copy" type="button">Copy</button
 
         <p class="note">⚠ With OpenRouter, AgentRouter and cloud models, your code passes through their servers. Keep client code, passwords and <code class="i">.env</code> files away from free relays, and never share your key.</p>
       </div></div>
+    </section>
+
+    <section id="v-goals" hidden>
+      <div class="mhead"><h2>What can I do with these repos?</h2><span class="sub">Pick a goal. Each one lists the repos to use, what to do with each, and where to start.</span></div>
+      <div class="goals" id="goals"></div>
     </section>
 
     <section id="v-shortcuts" hidden>
@@ -1418,10 +1444,29 @@ $("ftoggle").addEventListener("click", () => {
 });
 
 /* views */
-const VIEWS = ["repos", "free-claude", "shortcuts"];
+const VIEWS = ["use-cases", "repos", "free-claude", "shortcuts"];
+
+/* "What can I do?" view */
+const GOALS = [{"t": "Code Panda ERP faster with Claude Code", "i": "code", "why": "Turn Claude Code into a careful senior developer that plans, tests and remembers your project.", "start": "Install ECC once: npx ecc-universal@2.2.3 setup, then use /ecc:plan before every new feature.", "p": [["ECC", "Plan → build → test → review flow with 71 ready agents. Use /ecc:plan before each ERP feature."], ["Andrej Karpathy Skills", "One CLAUDE.md that stops over-engineering and random edits. Drop it in panda-outfit-hq."], ["Superpowers", "Makes Claude brainstorm, write a plan and test before coding. Good for bigger modules."], ["Context7", "Gives Claude the latest Vue 3, PrimeVue and Vite docs, so it stops using old APIs."], ["Chrome DevTools MCP", "Claude opens the ERP in Chrome, reads console errors and checks speed itself."], ["Playwright MCP", "Claude clicks through login, orders and pick-scan flows to test them after each change."], ["claude-mem", "Claude remembers past sessions on Panda ERP, so you explain less each time."], ["Caveman", "Short replies, about 65% fewer tokens. Use it when your limit is running low."], ["ccusage", "Shows how many tokens and how much money each day and session used."]]}, {"t": "Use AI for free (no subscription)", "i": "gift", "why": "Run good models on your M1 Mac or through free API tiers when you don't want to pay.", "start": "Install Jan (desktop app), download a 7B model, and chat offline. Use Free LLM API for free cloud keys.", "p": [["Jan", "ChatGPT-style desktop app that runs models offline on your Mac. Easiest start."], ["Open WebUI", "Your own ChatGPT web page on top of Ollama or any API key. Saves chats and files."], ["GPT4All", "Simple offline chat app; can also chat with your own PDFs and notes."], ["Free LLM API", "Collects free-tier API keys from many providers behind one endpoint."], ["OmniRoute", "Routes each request to the cheapest or free model that can do the job."], ["DeepSeek Harness", "A Claude Code-like coding agent that can run on free local models (Ollama)."], ["OpenCode", "Open-source terminal coding agent; plug in any model, including free ones."]]}, {"t": "Thesis: Chapters 1–3 and proposal defence", "i": "cap", "why": "Find papers, read them faster, manage citations and draw diagrams. You still write and judge the content yourself.", "start": "Put every paper in Zotero first. Then convert PDFs with Marker and ask questions with PaperQA or Open Notebook.", "p": [["Zotero", "Saves every paper, makes APA references and in-text citations in Word automatically."], ["PaperQA", "Ask questions across your paper PDFs and get answers with exact citations. Good for Chapter 2."], ["Open Notebook", "Free NotebookLM: upload papers, ask questions, make summaries and podcasts."], ["GPT Researcher", "Searches the web and writes a sourced research report on an SPA performance topic."], ["STORM", "Builds a Wikipedia-style overview with citations; useful to plan your literature review outline."], ["Marker", "Turns PDF papers into clean Markdown so Claude can read them properly."], ["MinerU", "Same idea as Marker, strong with tables and formulas in papers."], ["Diagram Design", "Draws clean diagrams for your methodology and system architecture."]]}, {"t": "TradeBot and OKX trading", "i": "chart", "why": "Connect to OKX, test strategies on past data, and only then risk money. For learning, not financial advice.", "start": "Backtest your strategy in Freqtrade with dry-run on. Only go live after weeks of paper trading.", "p": [["CCXT", "One library to talk to OKX, Binance and 100+ exchanges from Python or JavaScript."], ["Freqtrade", "Full crypto bot with backtesting, dry-run (paper trading) and a Telegram control panel."], ["Jesse", "Clean Python framework to research and backtest strategies before going live."], ["Hummingbot", "Market-making and arbitrage bots for advanced strategies."], ["TradingAgents", "AI analysts debate a trade (news, technicals, risk). Learn how AI trading desks think."], ["OpenStock", "Free stock watchlist and alerts app."]]}, {"t": "Panda business: WhatsApp support, CRM and automation", "i": "chat", "why": "Answer customers on WhatsApp and Instagram from one place, let AI handle common questions, and automate order messages.", "start": "Set up Chatwoot with the official WhatsApp Cloud API, then connect Dify for AI replies from your product catalogue.", "p": [["Chatwoot", "One team inbox for WhatsApp, Instagram and website chat, with agent handover."], ["Dify", "Build the AI brain: answers from your catalogue, prices and policies, then plug into Chatwoot."], ["n8n", "Automations: new order → WhatsApp message → Google Sheet → staff alert, without code."], ["Twenty CRM", "Keep customers, wholesale leads and follow-ups in one free CRM."], ["Evolution API", "Cheap WhatsApp API for order and delivery messages. Unofficial: use a spare number."], ["Meta Business Agent", "WhatsApp's own AI agent. Easiest, but paid (Premium or per token)."]]}, {"t": "Instagram @thetechstien: reels and guides", "i": "video", "why": "Find trending tools, script reels, cut videos, add voice and captions, and make thumbnails faster.", "start": "Each morning, pick one repo from the daily report, use Last 30 Days to check the buzz, then script with Marketing Skills.", "p": [["Last 30 Days", "Shows what Reddit, X, YouTube and GitHub said about a topic this month: great for reel ideas."], ["Marketing Skills", "Hooks, captions, carousel text and content calendars for Instagram."], ["Clipify", "Cuts long screen recordings into 9:16 reels with captions."], ["Cut Video", "Removes silences and 'umm' from your recordings automatically."], ["Remotion Skills", "Claude makes animated intros, captions and code-based videos."], ["Kokoro", "Free, fast text-to-speech for voiceovers; runs on a normal laptop."], ["Chatterbox", "Free voice cloning and expressive voiceovers (ElevenLabs alternative)."], ["Claude Banana", "Writes strong image prompts for thumbnails and carousel covers."], ["Social Caption Generator", "Turns your script into ready captions for Reels, Shorts and TikTok."]]}, {"t": "Personal AI assistant 24/7 (your Jarvis)", "i": "bot", "why": "An agent that remembers you, runs on a server and that you can message from your phone.", "start": "Install Hermes Agent on the Azure for Students server and connect Telegram.", "p": [["Hermes Agent", "Agent that remembers you, uses tools and can be controlled from Telegram."], ["OpenClaw", "Personal assistant you chat with on WhatsApp or Telegram; it actually does tasks."], ["NanoClaw", "Lighter, safer OpenClaw: each agent runs in its own container."], ["WhatsApp MCP", "Lets Claude read your WhatsApp chats and send messages for you, locally."], ["Agent Reach", "Gives your agent eyes on Twitter, Reddit, YouTube and GitHub."], ["Mem0", "Long-term memory layer you can add to any agent you build."]]}, {"t": "Get alerts on your phone", "i": "bell", "why": "Know when a trade happens, a server goes down or the daily report is ready.", "start": "Install the ntfy app, pick a secret topic name, and send alerts with one curl command.", "p": [["ntfy", "One curl command → push notification on your phone. Perfect for TradeBot alerts."], ["CallMeBot", "Free WhatsApp messages to your own number from scripts and GitHub Actions."], ["Apprise", "Send one alert to WhatsApp, Telegram, email and ntfy at the same time."], ["Gotify", "Your own self-hosted notification server and Android app."]]}, {"t": "Host and deploy cheaply", "i": "rocket", "why": "Put your apps, bots and n8n online on a cheap or free server.", "start": "Get the Azure for Students server, install Coolify, then deploy apps from GitHub with one click.", "p": [["Coolify", "Your own Vercel/Heroku on any VPS: deploy apps, databases and n8n with a few clicks."], ["n8n", "Self-host it on the same server to run automations 24/7."], ["Free for Dev", "Huge list of services with free tiers: hosting, databases, email, monitoring."], ["Public APIs", "Free APIs for weather, finance, currency and more to use in your projects."]]}, {"t": "Freelance (Fiverr) and client websites", "i": "brief", "why": "Deliver better-looking sites faster and offer extra services like SEO audits.", "start": "Add UI UX Pro Max and 21st Magic MCP to Claude Code before your next client website.", "p": [["UI UX Pro Max", "Design rules and styles so Claude builds polished, consistent UIs."], ["21st Magic MCP", "Generate React/Tailwind components from a prompt inside Claude Code."], ["Impeccable", "Design-quality skill that fixes spacing, type and colour details."], ["Claude SEO", "Full SEO audit skill: sell it as an extra Fiverr gig."], ["Firecrawl", "Scrape a client's old website into clean content for a redesign."], ["Google Maps Scraper (engine)", "Find local businesses without websites as leads. Respect Google's terms."]]}];
+const GOAL_ICON = {"code": "<path d=\"M8 6l-6 6 6 6M16 6l6 6-6 6\"/>", "gift": "<rect x=\"3\" y=\"8\" width=\"18\" height=\"13\" rx=\"2\"/><path d=\"M12 8v13M3 12h18M12 8S10 3 7.5 4.5 9 8 12 8zM12 8s2-5 4.5-3.5S15 8 12 8z\"/>", "cap": "<path d=\"M22 9L12 4 2 9l10 5 10-5z\"/><path d=\"M6 11v5c3 3 9 3 12 0v-5\"/>", "chart": "<path d=\"M3 17l6-6 4 4 8-8\"/><path d=\"M15 7h6v6\"/>", "chat": "<path d=\"M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z\"/>", "video": "<rect x=\"2\" y=\"5\" width=\"20\" height=\"14\" rx=\"4\"/><path d=\"M10 9l5 3-5 3z\"/>", "bot": "<rect x=\"4\" y=\"8\" width=\"16\" height=\"12\" rx=\"3\"/><path d=\"M12 4v4M9 13h.01M15 13h.01M9 17h6\"/>", "bell": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\"/><path d=\"M10.3 21a1.9 1.9 0 0 0 3.4 0\"/>", "rocket": "<path d=\"M5 15c-1.5 1.5-2 5-2 5s3.5-.5 5-2\"/><path d=\"M9 15l-3-3c1-4 4-8 12-9-1 8-5 11-9 12z\"/><circle cx=\"14.5\" cy=\"9.5\" r=\"1.5\"/>", "brief": "<rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"2\"/><path d=\"M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18\"/>"};
+function renderGoals() {
+  const byName = Object.fromEntries(data.map(r => [r.name, r]));
+  $("nGoals").textContent = GOALS.length;
+  $("goals").innerHTML = GOALS.map((g, gi) => `
+    <article class="goal">
+      <header class="goal-h">
+        <span class="goal-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${GOAL_ICON[g.i] || ""}</svg></span>
+        <div><h3>${esc(g.t)}</h3><p>${esc(g.why)}</p></div>
+      </header>
+      <div class="goal-start"><b>Start here</b>${esc(g.start)}</div>
+      <ul class="picks">${g.p.map(([n, what]) => { const r = byName[n] || { name: n, url: "#" };
+        return `<li><a class="pick" href="${esc(r.url)}" target="_blank" rel="noopener">${logoHtml(r)}<span class="pick-t"><b>${esc(n)}</b>${r._stars ? `<small>★ ${fmt(r._stars)}</small>` : ""}<span>${esc(what)}</span></span></a></li>`; }).join("")}</ul>
+    </article>`).join("");
+}
+
 function show() {
   const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "repos";
-  VIEWS.forEach(x => $("v-" + x).hidden = x !== v);
+  VIEWS.forEach(x => $("v-" + (x === "use-cases" ? "goals" : x)).hidden = x !== v);
   document.querySelectorAll("nav.views a").forEach(a => a.dataset.view === v ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
   $("filters").hidden = v !== "repos";
   if (window.innerWidth > 880) window.scrollTo(0, 0);
@@ -1459,7 +1504,7 @@ $("codes").addEventListener("click", e => {
   try { navigator.clipboard.writeText(b.dataset.c).then(done, () => {}); } catch (err) {}
 });
 
-meta(); buildFilters(); render(); renderCodes(""); show();
+meta(); buildFilters(); render(); renderCodes(""); renderGoals(); show();
 </script>
 
 </body>
