@@ -1,13 +1,11 @@
-*AI Repos – 2 Nov*
-🚀 *Aaj ki khabar:* Claude Design ka open-source version "Open Design" trend kar raha hai (57k+ stars), apni keys ya Ollama se chalta hai.
-🧠 *Naya trend:* agents ke liye memory tools (claude-mem, Mem0) aur Claude Code se game studio banana.
-🛠️ *Market mein:* OpenCode – Claude Code ka free terminal alternative.
-
-*5 nayi repos add hui:*
-1. Open Design – UI design AI se: https://github.com/nexu-io/open-design
-2. Claude Code Game Studios – 49 agents se game banao: https://github.com/Donchitos/Claude-Code-Game-Studios
-3. Mem0 – AI agent ki memory: https://github.com/mem0ai/mem0
-4. Firecrawl – website ko AI data mein badlo: https://github.com/firecrawl/firecrawl
-5. OpenCode – free coding agent: https://github.com/anomalyco/opencode
-
+*AI Repos – 3 Nov*
+🚀 *Aaj ki khabar:* Karpathy ka *nanochat* trend par – apna chhota ChatGPT khud train karo, ek GPU par (60k stars).
+🧠 *Naya trend:* bahut saare agents ek saath chalane wale "command center" tools (Orca, Orkas) aur agents ke liye fast browser.
+🛠️ *Market mein:* Lightpanda – AI agents ke liye super fast headless browser, Chrome se halka.
+📦 *Nayi repos add hui:*
+• nanochat – apna ChatGPT clone: https://github.com/karpathy/nanochat
+• Lightpanda – agent browser: https://github.com/lightpanda-io/browser
+• Orca – kai coding agents ek jagah: https://github.com/stablyai/orca
+• Orkas – local AI team: https://github.com/Orkas-AI/Orkas
+• DeepTutor – study/thesis AI tutor: https://github.com/HKUDS/DeepTutor
 https://asif-reachout.github.io/claude-ai-repos/
