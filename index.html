@@ -603,6 +603,16 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 24px 56px; padding-lef
   .totop { bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
 @media (max-width: 880px) { .topbar { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: var(--side); } }
+
+/* ===== v15: amber accent for light + dark, single-border search ===== */
+:root, :root[data-theme="light"] { --accent: #b45309; --accent-ink: #ffffff; --accent-soft: #fdf0d8; --paid: #7c3aed; --paid-soft: #f1eafe; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent: #f2b544; --accent-ink: #1c1504; --accent-soft: #3a2d12; --paid: #b69cff; --paid-soft: #2a2344; } }
+:root[data-theme="dark"], :root[data-theme="github"] { --accent: #f2b544; --accent-ink: #1c1504; --accent-soft: #3a2d12; --paid: #b69cff; --paid-soft: #2a2344; }
+.costb.cost-paid { background: var(--paid-soft); color: var(--paid); }
+.dot.paid { background: var(--paid); }
+.search input:focus, .search input:focus-visible { outline: none !important; border-color: var(--accent); box-shadow: none; }
+.hero .search input { border: 1px solid var(--line); }
+.hero .search input:focus { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>try{var t=localStorage.getItem("theme");if(!t&&matchMedia("(prefers-color-scheme: dark)").matches)t="github";if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
