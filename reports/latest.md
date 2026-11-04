@@ -1,11 +1,10 @@
-*AI Repos – 3 Nov*
-🚀 *Aaj ki khabar:* Karpathy ka *nanochat* trend par – apna chhota ChatGPT khud train karo, ek GPU par (60k stars).
-🧠 *Naya trend:* bahut saare agents ek saath chalane wale "command center" tools (Orca, Orkas) aur agents ke liye fast browser.
-🛠️ *Market mein:* Lightpanda – AI agents ke liye super fast headless browser, Chrome se halka.
+*AI Repos – 4 Nov*
+🔥 *Trending:* DeepSeek ka naya *Superagent* prototype (18.5k stars) aur DeepInfer top par; Rust mein Word/Excel/AutoCAD ke open-source clones (storytold) bhi viral.
+🚀 *Launch:* Grok Bot / Claude Duet ka open-source version aa gaya – *AnyModelBot*, kisi bhi model par apne bots.
 📦 *Nayi repos add hui:*
-• nanochat – apna ChatGPT clone: https://github.com/karpathy/nanochat
-• Lightpanda – agent browser: https://github.com/lightpanda-io/browser
-• Orca – kai coding agents ek jagah: https://github.com/stablyai/orca
-• Orkas – local AI team: https://github.com/Orkas-AI/Orkas
-• DeepTutor – study/thesis AI tutor: https://github.com/HKUDS/DeepTutor
+• AnyModelBot – free Grok Bot alternative: https://github.com/modelflare-ai/AnyModelBot
+• Unslop – AI-looking UI ko pro design banao (Claude skill): https://github.com/heydamir/unslop
+• Floorplan – codebase ka plain-English map: https://github.com/haydenschmitty/floorplan
+• DeepSeek Superagent – autonomous agent: https://github.com/deepseek-ai/dsh-superagent-prototype
+• OpenDuet – proactive AI agent template: https://github.com/CopilotKit/OpenDuet
 https://asif-reachout.github.io/claude-ai-repos/
