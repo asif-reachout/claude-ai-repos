@@ -486,7 +486,8 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 24px 56px; padding-lef
 .catchips button[aria-pressed="true"] .ci, .catchips button[aria-pressed="true"] .n { color: inherit; }
 .resbar { position: sticky; top: 60px; z-index: 20; background: var(--bg); display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
 .resbar #count { font-weight: 600; color: var(--ink); font-size: 14px; margin-right: 4px; }
-.resbar .qbar { margin: 0; flex: 1; gap: 8px 14px; }
+.resbar .qbar { margin: 0; flex: 1; gap: 8px 12px; }
+.resbar .qlabel { display: none; }
 .resbar .qsort { margin-left: auto; }
 .ftoggle { display: inline-flex !important; align-items: center; height: 30px !important; padding: 0 12px; border-radius: 999px; border: 1px dashed color-mix(in srgb, var(--ink) 30%, var(--line)); background: transparent; color: var(--ink); font: inherit; font-size: 12.5px; font-weight: 500; cursor: pointer; }
 .ftoggle[aria-expanded="true"] { border-style: solid; background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
@@ -625,6 +626,18 @@ body { font-feature-settings: "ss01", "cv11"; -webkit-font-smoothing: antialiase
 .card .name, .card .name a, .pick-t b { color: var(--ink) !important; font-weight: 650; letter-spacing: -0.01em; }
 .card:hover .name a { color: var(--accent) !important; }
 .hero-top h2, .mhead h2, .goal-h h3 { letter-spacing: -0.025em; }
+
+/* v18: favorites */
+.fav { position: relative; z-index: 2; flex: none; width: 30px; height: 30px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: color-mix(in srgb, var(--muted) 70%, transparent); display: inline-grid; place-items: center; cursor: pointer; transition: color .15s, transform .15s, background .15s; }
+.fav svg { fill: none; }
+.fav:hover { color: #e5487a; border-color: #e5487a; }
+.fav[aria-pressed="true"] { color: #e5487a; border-color: color-mix(in srgb, #e5487a 45%, var(--line)); background: color-mix(in srgb, #e5487a 12%, transparent); }
+.fav[aria-pressed="true"] svg { fill: currentColor; }
+.fav:active { transform: scale(.9); }
+.favchip svg { color: #e5487a; fill: none; }
+.favchip[aria-pressed="true"] svg { fill: currentColor; color: inherit; }
+.favchip .n { font-family: var(--f-mono); font-size: 11px; opacity: .7; }
+@media (pointer: coarse) { .fav { width: 40px; height: 40px; } }
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>try{var t=localStorage.getItem("theme");if(!t&&matchMedia("(prefers-color-scheme: dark)").matches)t="github";if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
@@ -1495,6 +1508,7 @@ function buildFilters() {
     `<button type="button" data-v="${v}" aria-pressed="${state.fresh === v}"><span class="dot f-${v || "all"}"></span>${l}<span class="n">${n}</span></button>`).join("");
   const qchip = (k, v, l, cls) => `<button type="button" class="qchip" data-k="${k}" data-v="${v}" aria-pressed="${state[k] === v}"><span class="dot ${cls}"></span>${l}</button>`;
   $("qbar").innerHTML =
+    `<div class="qgroup"><button type="button" class="qchip favchip" id="favchip" aria-pressed="${!!state.favOnly}"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>Favorites <span class="n">${FAV.size}</span></button></div>` +
     `<div class="qgroup"><span class="qlabel">Activity</span>${["fresh", "ok", "stale"].map(k => qchip("fresh", k, FRESH_SHORT[k], "f-" + k)).join("")}</div>` +
     `<div class="qgroup"><span class="qlabel">Cost</span>${qchip("cost", "free", "Free", "free")}${qchip("cost", "keys", "Pay for AI", "keys")}${qchip("cost", "paid", "Paid plan", "paid")}</div>` +
     `<label class="qsort"><span class="qlabel">Sort</span><select id="qsort">${[["stars-desc", "Most stars"], ["stars-asc", "Fewest stars"], ["updated", "Recently updated"], ["newest", "Newest added"], ["name", "A–Z"]].map(([v, l]) => `<option value="${v}"${state.sort === v ? " selected" : ""}>${l}</option>`).join("")}</select></label>`;
@@ -1566,6 +1580,9 @@ function siteBtn(r) {
 
 const NEW_DAYS = 7;
 function isNew(r) { return !!r.added && (Date.now() - Date.parse(r.added)) / 864e5 < NEW_DAYS; }
+let FAV = new Set();
+try { FAV = new Set(JSON.parse(localStorage.getItem("favRepos") || "[]")); } catch (e) {}
+const saveFav = () => { try { localStorage.setItem("favRepos", JSON.stringify([...FAV])); } catch (e) {} };
 function cardHtml(r) { return `
     <article class="card" style="--h:${hueOf(r.category)}">
       <div class="head">
@@ -1581,7 +1598,7 @@ function cardHtml(r) { return `
       <div class="foot">
         <span class="costb cost-${r._cost}" title="${esc(COST_HELP[r._cost])}">${COST_LABEL[r._cost]}${r._costNote ? ` · ${esc(r._costNote)}` : ""}</span>
         <span class="cat">${esc(r.category)}</span>
-        ${siteBtn(r)}<span class="go" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+        <button type="button" class="fav" data-fav="${esc(r.url)}" aria-pressed="${FAV.has(r.url)}" aria-label="${FAV.has(r.url) ? "Remove from favorites" : "Add to favorites"}" title="Favorite"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></button>${siteBtn(r)}<span class="go" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
       </div>
     </article>`; }
 
@@ -1593,7 +1610,8 @@ function render() {
     .filter(r => !state.cat || r.category === state.cat)
     .filter(r => r._stars >= state.min)
     .filter(r => !state.cost || r._cost === state.cost)
-    .filter(r => !state.fresh || freshOf(r) === state.fresh);
+    .filter(r => !state.fresh || freshOf(r) === state.fresh)
+    .filter(r => !state.favOnly || FAV.has(r.url));
   if (state.sort === "stars-desc") shown.sort((a, b) => b._stars - a._stars);
   else if (state.sort === "stars-asc") shown.sort((a, b) => a._stars - b._stars);
   else if (state.sort === "name") shown.sort((a, b) => a.name.localeCompare(b.name));
@@ -1609,18 +1627,19 @@ function render() {
   if (state.min) act.push(["min", `★ ${fmt(state.min)}+`]);
   if (state.cat) act.push(["cat", state.cat]);
   if (state.fresh) act.push(["fresh", FRESH_LABEL[state.fresh]]);
+  if (state.favOnly) act.push(["favOnly", "Favorites only"]);
   $("active").innerHTML = act.map(([k, l]) => `<button type="button" class="tag-x" data-k="${k}">${esc(l)}<span aria-label="Remove">×</span></button>`).join("");
   $("active").hidden = !act.length;
   $("clearAll").hidden = !act.length;
 
-  const plain = !q && !state.cat && !state.min && !state.cost && !state.fresh;
+  const plain = !q && !state.cat && !state.min && !state.cost && !state.fresh && !state.favOnly;
   const fresh = plain ? shown.filter(isNew).sort((a, b) => b._i - a._i) : [];
   $("newbox").hidden = !fresh.length;
   $("newcount").textContent = fresh.length ? `${fresh.length} new` : "";
   $("newlist").innerHTML = fresh.map(cardHtml).join("");
   const rest = fresh.length ? shown.filter(r => !isNew(r)) : shown;
   const page = rest.slice(0, LIMIT);
-  $("list").innerHTML = rest.length ? page.map(cardHtml).join("") : (fresh.length ? "" : `<div class="empty"><b>No repos match${q ? ` “${esc(state.q.trim())}”` : ""}.</b><span>Try a shorter word, or start from a goal.</span><div class="empty-acts"><button type="button" class="ebtn" data-act="clear">Clear search &amp; filters</button><a class="ebtn ghost" href="#use-cases">What can I do?</a></div></div>`);
+  $("list").innerHTML = rest.length ? page.map(cardHtml).join("") : (fresh.length ? "" : `<div class="empty"><b>${state.favOnly && !FAV.size ? "No favorites yet." : `No repos match${q ? ` “${esc(state.q.trim())}”` : ""}.`}</b><span>${state.favOnly && !FAV.size ? "Tap the ♥ on any repo to save it here." : "Try a shorter word, or start from a goal."}</span><div class="empty-acts"><button type="button" class="ebtn" data-act="clear">Clear search &amp; filters</button><a class="ebtn ghost" href="#use-cases">What can I do?</a></div></div>`);
   const left = rest.length - page.length;
   $("more").hidden = left <= 0;
   $("more").textContent = `Show ${Math.min(30, left)} more · ${left} left`;
@@ -1678,6 +1697,20 @@ $("ftoggle").addEventListener("click", () => {
   render();
 })();
 
+
+$("q").placeholder = `Search ${data.length} repos — try “whatsapp”, “thesis”, “free claude”`;
+/* favorites */
+document.addEventListener("click", e => {
+  const b = e.target.closest(".fav");
+  if (b) { e.preventDefault(); e.stopPropagation(); const u = b.dataset.fav;
+    FAV.has(u) ? FAV.delete(u) : FAV.add(u); saveFav();
+    document.querySelectorAll('.fav[data-fav="' + CSS.escape(u) + '"]').forEach(x => { const on = FAV.has(u); x.setAttribute("aria-pressed", on); x.setAttribute("aria-label", on ? "Remove from favorites" : "Add to favorites"); });
+    const n = document.querySelector("#favchip .n"); if (n) n.textContent = FAV.size;
+    if (state.favOnly) render();
+    return; }
+  if (e.target.closest("#favchip")) { state.favOnly = !state.favOnly; LIMIT = 30; buildFilters(); render(); }
+}, true);
+$("clearAll").addEventListener("click", () => { state.favOnly = false; buildFilters(); render(); });
 /* views */
 const VIEWS = ["use-cases", "repos", "free-claude", "shortcuts"];
 
