@@ -1,10 +1,10 @@
-*AI Repos – 4 Nov*
-🔥 *Trending:* DeepSeek ka naya *Superagent* prototype (18.5k stars) aur DeepInfer top par; Rust mein Word/Excel/AutoCAD ke open-source clones (storytold) bhi viral.
-🚀 *Launch:* Grok Bot / Claude Duet ka open-source version aa gaya – *AnyModelBot*, kisi bhi model par apne bots.
+*AI Repos – 5 Nov*
+🔥 *Trending:* DeepSeek *Superagent* (19.5k) abhi bhi top par; *Craft Anything* (14.9k) aur DeepSeek harness ka mobile version *dsh-Go* (11.4k) tezi se upar.
+🚀 *Launch:* Pika ne apna *H3 Flex* video+audio model open kar diya – Higgsfield/Pika ka self-host version. Theo (t3dotgg) ne apne daily Claude skills *tstack* release kiye.
 📦 *Nayi repos add hui:*
-• AnyModelBot – free Grok Bot alternative: https://github.com/modelflare-ai/AnyModelBot
-• Unslop – AI-looking UI ko pro design banao (Claude skill): https://github.com/heydamir/unslop
-• Floorplan – codebase ka plain-English map: https://github.com/haydenschmitty/floorplan
-• DeepSeek Superagent – autonomous agent: https://github.com/deepseek-ai/dsh-superagent-prototype
-• OpenDuet – proactive AI agent template: https://github.com/CopilotKit/OpenDuet
+• tstack – Claude Code/Codex skills pack: https://github.com/t3dotgg/tstack
+• Claude Animated Shorts – viral animated YouTube shorts skill: https://github.com/mromidev/claude-animated-shorts
+• Pika H3 Flex – open AI video generation: https://github.com/Pika-Labs/Pika-H3-Flex
+• Cicada – free live subtitles + AI meeting notes: https://github.com/wquguru/cicada
+• Agent Autoloop – agent background mein khud kaam karta hai: https://github.com/KKKKhazix/agent-autoloop
 https://asif-reachout.github.io/claude-ai-repos/
